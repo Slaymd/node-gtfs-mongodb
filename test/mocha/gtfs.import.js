@@ -3,48 +3,52 @@
 
 const path = require('path');
 const fs = require('fs');
-
-const extract = require('extract-zip');
 const parse = require('csv-parse');
-const mongoose = require('mongoose');
 const should = require('should');
 
-const config = require('../config.json');
+const { openDb, closeDb } = require('../../lib/db');
+const { unzip } = require('../../lib/file-utils');
+const config = require('../test-config.js');
 const gtfs = require('../..');
 const models = require('../../models/models');
 
-const agenciesFixturesUrl = [{
-  agency_key: 'caltrain',
+let db;
+
+const agenciesFixturesRemote = [{
   url: 'http://transitfeeds.com/p/caltrain/122/20160406/download'
 }];
 
 const agenciesFixturesLocal = [{
-  agency_key: 'caltrain',
   path: path.join(__dirname, '../fixture/caltrain_20160406.zip')
 }];
 
 describe('lib/import.js', function () {
   before(async () => {
-    await mongoose.connect(config.mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
+    db = await openDb(config);
   });
 
   after(async () => {
-    await mongoose.connection.db.dropDatabase();
-    await mongoose.connection.close();
+    await closeDb();
   });
 
   this.timeout(10000);
   describe('Download and import from different GTFS sources', () => {
     it('should be able to download and import from HTTP', async () => {
-      await mongoose.connection.db.dropDatabase();
-      config.agencies = agenciesFixturesUrl;
+      config.agencies = agenciesFixturesRemote;
       await gtfs.import(config);
+
+      const routes = await gtfs.getRoutes();
+      should.exist(routes);
+      routes.length.should.equal(4);
     });
 
     it('should be able to download and import from local filesystem', async () => {
-      await mongoose.connection.db.dropDatabase();
       config.agencies = agenciesFixturesLocal;
       await gtfs.import(config);
+
+      const routes = await gtfs.getRoutes();
+      should.exist(routes);
+      routes.length.should.equal(4);
     });
   });
 
@@ -55,7 +59,7 @@ describe('lib/import.js', function () {
     const temporaryDir = path.join(__dirname, '../fixture/tmp/');
 
     before(async () => {
-      await extract(agenciesFixturesLocal[0].path, { dir: temporaryDir });
+      await unzip(agenciesFixturesLocal[0].path, temporaryDir);
 
       await Promise.all(models.map(model => {
         const filePath = path.join(temporaryDir, `${model.filenameBase}.txt`);
@@ -70,9 +74,9 @@ describe('lib/import.js', function () {
           columns: true,
           relax: true,
           trim: true
-        }, (err, data) => {
-          if (err) {
-            throw new Error(err);
+        }, (error, data) => {
+          if (error) {
+            throw new Error(error);
           }
 
           countData[model.filenameBase] = data.length;
@@ -80,23 +84,19 @@ describe('lib/import.js', function () {
 
         return fs.createReadStream(filePath)
           .pipe(parser)
-          .on('error', err => {
+          .on('error', error => {
             countData[model.collection] = 0;
-            throw new Error(err);
+            throw new Error(error);
           });
       }));
 
-      await mongoose.connection.db.dropDatabase();
       await gtfs.import(config);
     });
 
     for (const model of models) {
-      it(`should import the same number of ${model.filenameBase}`, done => {
-        model.model.collection.estimatedDocumentCount({}, (err, result) => {
-          should.not.exist(err);
-          result.should.equal(countData[model.filenameBase]);
-          done();
-        });
+      it(`should import the same number of ${model.filenameBase}`, async () => {
+        const result = await db.get(`SELECT COUNT(*) FROM ${model.filenameBase};`);
+        result['COUNT(*)'].should.equal(countData[model.filenameBase]);
       });
     }
   });
