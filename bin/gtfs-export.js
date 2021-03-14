@@ -1,34 +1,33 @@
 #!/usr/bin/env node
 
+const mongoose = require('mongoose');
+
 const { argv } = require('yargs')
-  .usage('Usage: $0 --configPath ./config.json')
+  .usage('Usage: $0 --config ./config.json')
   .help()
   .option('c', {
     alias: 'configPath',
     describe: 'Path to config file',
-    type: 'string'
-  })
-  .option('sqlitePath', {
-    describe: 'Path to SQLite database',
-    type: 'string'
-  })
-  .option('exportPath', {
-    describe: 'Path where GTFS export should go',
+    default: './config.json',
     type: 'string'
   });
 
-const { getConfig } = require('../lib/file-utils');
+const fileUtils = require('../lib/file-utils');
 const logUtils = require('../lib/log-utils');
 const gtfs = require('..');
 
-const handleError = (error = 'Unknown Error') => {
-  process.stdout.write(`\n${logUtils.formatError(error)}\n`);
+const handleError = err => {
+  const text = err || 'Unknown Error';
+  process.stdout.write(`\n${logUtils.formatError(text)}\n`);
   process.exit(1);
 };
 
 const setupExport = async () => {
-  const config = await getConfig(argv);
+  const config = await fileUtils.getConfig(argv);
+
+  await mongoose.connect(config.mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
   await gtfs.export(config);
+  await mongoose.connection.close();
   process.exit();
 };
 

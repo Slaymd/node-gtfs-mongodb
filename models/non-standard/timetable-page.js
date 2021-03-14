@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const StopAttributes = mongoose.model('StopAttributes', new mongoose.Schema({
+const TimetablePage = mongoose.model('TimetablePage', new mongoose.Schema({
   created_at: {
     type: Date,
     default: Date.now,
@@ -11,11 +11,12 @@ const StopAttributes = mongoose.model('StopAttributes', new mongoose.Schema({
     required: true,
     index: true
   },
-  stop_id: {
+  timetable_page_id: {
     type: String,
     index: true
   },
-  stop_city: String
+  timetable_page_label: String,
+  filename: String
 }));
 
-module.exports = StopAttributes;
+module.exports = TimetablePage;

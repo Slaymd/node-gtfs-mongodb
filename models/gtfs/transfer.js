@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const FeedInfo = mongoose.model('FeedInfo', new mongoose.Schema({
+const Transfer = mongoose.model('Transfer', new mongoose.Schema({
   created_at: {
     type: Date,
     default: Date.now,
@@ -11,27 +11,25 @@ const FeedInfo = mongoose.model('FeedInfo', new mongoose.Schema({
     required: true,
     index: true
   },
-  feed_publisher_name: {
+  from_stop_id: {
     type: String,
     required: true
   },
-  feed_publisher_url: {
+  to_stop_id: {
     type: String,
     required: true
   },
-  feed_lang: {
-    type: String,
-    required: true
-  },
-  feed_start_date: {
+  transfer_type: {
     type: Number,
-    min: 10000000
+    required: true,
+    index: true,
+    min: 0,
+    max: 3
   },
-  feed_end_date: {
+  min_transfer_time: {
     type: Number,
-    min: 10000000
-  },
-  feed_version: String
+    min: 0
+  }
 }));
 
-module.exports = FeedInfo;
+module.exports = Transfer;

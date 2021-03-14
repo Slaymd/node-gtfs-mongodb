@@ -18,7 +18,7 @@ const agencyKey = agenciesFixtures[0].agency_key;
 
 config.agencies = agenciesFixtures;
 
-describe('gtfs.getFareRules():', () => {
+describe('gtfs.getDirectionsByRoute():', () => {
   before(async () => {
     await mongoose.connect(config.mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
     await mongoose.connection.db.dropDatabase();
@@ -30,40 +30,36 @@ describe('gtfs.getFareRules():', () => {
     await mongoose.connection.close();
   });
 
-  it('should return empty array if no fare_rules', async () => {
+  it('should return empty array if no route', async () => {
     await mongoose.connection.db.dropDatabase();
 
     const routeId = 'not_real';
-
-    const fareRules = await gtfs.getFareRules({
+    const directions = await gtfs.getDirectionsByRoute({
       agency_key: agencyKey,
       route_id: routeId
     });
 
-    should.exists(fareRules);
-    fareRules.should.have.length(0);
+    should.exist(directions);
+    directions.should.have.length(0);
 
     await gtfs.import(config);
   });
 
-  it('should return expected fare_rules', async () => {
+  it('should return expected directions', async () => {
     const routeId = 'Bu-16APR';
 
-    const fareRules = await gtfs.getFareRules({
+    const directions = await gtfs.getDirectionsByRoute({
       agency_key: agencyKey,
       route_id: routeId
     });
 
-    should.exist(fareRules);
-    fareRules.length.should.equal(36);
+    should.exist(directions);
+    directions.should.have.length(3);
 
-    const fareRule = fareRules[0];
+    const direction = directions[0];
 
-    fareRule.should.not.have.any.keys('_id');
-    fareRule.agency_key.should.equal(agenciesFixtures[0].agency_key);
-    should.exist(fareRule.fare_id);
-    fareRule.route_id.should.equal(routeId);
-    should.exist(fareRule.origin_id);
-    should.exist(fareRule.destination_id);
+    should.exist(direction.route_id);
+    should.exist(direction.trip_headsign);
+    should.exist(direction.direction_id);
   });
 });

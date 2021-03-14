@@ -1,40 +1,38 @@
 #!/usr/bin/env node
 
+const mongoose = require('mongoose');
 const { argv } = require('yargs')
-  .usage('Usage: $0 --configPath ./config.json')
+  .usage('Usage: $0 --config ./config.json')
   .help()
   .option('c', {
     alias: 'configPath',
     describe: 'Path to config file',
+    default: './config.json',
     type: 'string'
   })
-  .option('gtfsPath', {
-    describe: 'Path to gtfs (zipped or unzipped)',
-    type: 'string'
-  })
-  .option('gtfsUrl', {
-    describe: 'URL of gtfs file',
-    type: 'string'
-  })
-  .option('sqlitePath', {
-    describe: 'Path to SQLite database',
-    type: 'string'
+  .option('s', {
+    alias: 'skipDelete',
+    describe: 'Don’t delete existing data for `agency_key` on import',
+    type: 'boolean',
+    default: false
   });
 
-const { getConfig } = require('../lib/file-utils');
+const fileUtils = require('../lib/file-utils');
 const logUtils = require('../lib/log-utils');
 const gtfs = require('..');
 
-const handleError = error => {
-  const text = error || 'Unknown Error';
+const handleError = err => {
+  const text = err || 'Unknown Error';
   process.stdout.write(`\n${logUtils.formatError(text)}\n`);
-  console.error(error);
   process.exit(1);
 };
 
 const setupImport = async () => {
-  const config = await getConfig(argv);
+  const config = await fileUtils.getConfig(argv);
+
+  await mongoose.connect(config.mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
   await gtfs.import(config);
+  await mongoose.connection.close();
   process.exit();
 };
 

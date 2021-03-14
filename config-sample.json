@@ -1,8 +1,15 @@
 {
+  "mongoUrl": "mongodb://localhost:27017/gtfs",
+  "csvOptions": {
+    "skip_lines_with_error": true
+  },
   "agencies": [
     {
-      "url": "~/path/to/my/gtfs"
+      "agency_key": "county-connection",
+      "url": "http://countyconnection.com/GTFS/google_transit.zip",
+      "exclude": [
+        "shapes"
+      ]
     }
-  ],
-  "sqlitePath": "/tmp/gtfs"
+  ]
 }
