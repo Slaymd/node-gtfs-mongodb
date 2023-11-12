@@ -25,7 +25,7 @@ const agenciesFixturesLocal = [{
 
 describe('lib/import.js', function () {
   before(async () => {
-    await mongoose.connect(config.mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
+    await mongoose.connect(config.mongoUrl);
   });
 
   after(async () => {

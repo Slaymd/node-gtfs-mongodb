@@ -30,7 +30,7 @@ const handleError = err => {
 const setupImport = async () => {
   const config = await fileUtils.getConfig(argv);
 
-  await mongoose.connect(config.mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
+  await mongoose.connect(config.mongoUrl);
   await gtfs.import(config);
   await mongoose.connection.close();
   process.exit();

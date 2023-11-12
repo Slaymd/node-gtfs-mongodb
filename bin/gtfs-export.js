@@ -25,7 +25,7 @@ const handleError = err => {
 const setupExport = async () => {
   const config = await fileUtils.getConfig(argv);
 
-  await mongoose.connect(config.mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
+  await mongoose.connect(config.mongoUrl);
   await gtfs.export(config);
   await mongoose.connection.close();
   process.exit();

@@ -44,7 +44,7 @@ Note: [Mongoose](http://mongoosejs.com/) is a peer dependency of `node-gtfs`, so
     const mongoose = require('mongoose');
     const config = require('./config.json');
 
-    mongoose.connect(config.mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
+    mongoose.connect(config.mongoUrl);
 
     gtfs.import(config)
     .then(() => {
@@ -166,7 +166,7 @@ API along with your API token.
 
 ### csvOptions
 
-{Object} Add options to be passed to [`csv-parse`](https://csv.js.org/parse/) wiith the key `csvOptions`. This is an optional paramenter.
+{Object} Add options to be passed to [`csv-parse`](https://csv.js.org/parse/) with the key `csvOptions`. This is an optional paramenter.
 
 For instance, if you wanted to skip importing invalid lines in the GTFS file:
 
@@ -242,7 +242,7 @@ If you want to route logs to a custom function, you can pass a function that tak
       }
     };
 
-    mongoose.connect(config.mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
+    mongoose.connect(config.mongoUrl);
 
     gtfs.import(config);
 
@@ -307,7 +307,7 @@ Use `gtfs.import()` in your code to run an import of a GTFS file specified in a 
     const mongoose = require('mongoose');
     const config = require('config.json');
 
-    mongoose.connect(config.mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
+    mongoose.connect(config.mongoUrl);
 
     gtfs.import(config)
     .then(() => {
@@ -335,7 +335,7 @@ Configuration can be a JSON object in your code
       ]
     };
 
-    mongoose.connect(config.mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true );
+    mongoose.connect(config.mongoUrl);
 
     gtfs.import(config)
     .then(() => {
@@ -401,7 +401,7 @@ Use `gtfs.export()` in your code to run an export of a GTFS file specified in a 
       ]
     };
 
-    mongoose.connect(config.mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
+    mongoose.connect(config.mongoUrl);
 
     gtfs.export(config)
     .then(() => {
