@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs-extra');
 
 const extract = require('extract-zip');
-const parse = require('csv-parse');
+const { parse } = require('csv-parse');
 const mongoose = require('mongoose');
 const should = require('should');
 
@@ -63,7 +63,7 @@ describe('lib/export.js', function () {
 
         const parser = parse({
           columns: true,
-          relax: true,
+          relax_quotes: true,
           trim: true
         }, (err, data) => {
           if (err) {
@@ -102,7 +102,7 @@ describe('lib/export.js', function () {
 
         const parser = parse({
           columns: true,
-          relax: true,
+          relax_quotes: true,
           trim: true
         }, (err, data) => {
           if (err) {

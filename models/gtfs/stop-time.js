@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const stopTimeSchema = new mongoose.Schema({
+const StopTime = mongoose.model('StopTime', new mongoose.Schema({
   created_at: {
     type: Date,
     default: Date.now,
@@ -55,13 +55,25 @@ const stopTimeSchema = new mongoose.Schema({
     min: 0,
     max: 1
   }
-});
+}));
 
-stopTimeSchema.index({
+StopTime.collection.createIndex({
   agency_key: 1,
   stop_id: 1,
   trip_id: 1,
   stop_sequence: 1
 });
 
-module.exports = mongoose.model('StopTime', stopTimeSchema);
+StopTime.collection.createIndex({
+  agency_key: 1,
+  stop_id: 1,
+  trip_id: 1,
+  departure_timestamp: 1
+});
+
+StopTime.collection.createIndex({
+  agency_key: 1,
+  trip_id: 1,
+});
+
+module.exports = StopTime;
