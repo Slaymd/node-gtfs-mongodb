@@ -28,7 +28,8 @@ const Route = mongoose.model('Route', new mongoose.Schema({
   },
   route_url: String,
   route_color: String,
-  route_text_color: String
+  route_text_color: String,
+  route_sort_order: Number,
 }));
 
 module.exports = Route;
