@@ -57,4 +57,6 @@ const Stop = mongoose.model('Stop', new mongoose.Schema({
   }
 }));
 
+Stop.collection.createIndex({ agency_key: 1, stop_id: 1 });
+
 module.exports = Stop;

@@ -39,4 +39,6 @@ const Shape = mongoose.model('Shape', new mongoose.Schema({
   shape_dist_traveled: Number
 }));
 
+Shape.collection.createIndex({ agency_key: 1, shape_id: 1 });
+
 module.exports = Shape;

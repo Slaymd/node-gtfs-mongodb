@@ -49,5 +49,6 @@ const Trip = mongoose.model('Trip', new mongoose.Schema({
 }));
 
 Trip.collection.createIndex({ agency_key: 1, route_id: 1, service_id: 1 });
+Trip.collection.createIndex({ agency_key: 1, route_id: 1 });
 
 module.exports = Trip;

@@ -58,6 +58,12 @@ const StopTime = mongoose.model('StopTime', new mongoose.Schema({
 }));
 
 StopTime.collection.createIndex({
+  stop_id: 1,
+  agency_key: 1,
+  departure_timestamp: 1
+});
+
+StopTime.collection.createIndex({
   agency_key: 1,
   stop_id: 1,
   trip_id: 1,

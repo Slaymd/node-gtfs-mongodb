@@ -28,4 +28,6 @@ const CalendarDate = mongoose.model('CalendarDate', new mongoose.Schema({
   holiday_name: String
 }));
 
+CalendarDate.collection.createIndex({ agency_key: 1, date: 1 });
+
 module.exports = CalendarDate;
